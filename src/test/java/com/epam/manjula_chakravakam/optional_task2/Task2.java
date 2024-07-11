@@ -1,4 +1,4 @@
-package com.epam.manjula_chakravakam.optional_task1;
+package com.epam.manjula_chakravakam.optional_task2;
 
 import org.junit.Assert;
 import org.junit.Test;
