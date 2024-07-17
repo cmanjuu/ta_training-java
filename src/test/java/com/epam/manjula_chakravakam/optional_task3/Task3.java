@@ -1,132 +1,115 @@
 package com.epam.manjula_chakravakam.optional_task3;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.time.Duration;
+import java.util.ArrayList;
 
 public class Task3{
+    private WebDriver driver;
+    CalculatorPage calculatorPage;
+    SummaryPage summaryPage;
+
+    String numberOfInstances = "4";
+    String operatingSystem = "Free: Debian, CentOS, CoreOS, Ubuntu or BYOL (Bring Your Own License)";
+    String provisioningModel = "Regular";
+    String machineFamily = "General Purpose";
+    String series = "N1";
+    String machineType = "n1-standard-8 vCPUs: 8, RAM: 30 GB";
+    String gpuModel = "NVIDIA Tesla V100";
+    String numberOfGPUs =  "1";
+    String localSSD =  "2x375 GB";
+    String region = "Netherlands (europe-west4)";
+    String commitedUse =  "1 year";
+
+
+    @BeforeClass
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.get("https://cloud.google.com/products/calculator");
+    }
 
     @Test
-    public void estimateCost() throws InterruptedException, AWTException {
-        WebDriver driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2000));
-        driver.get("https://cloud.google.com/products/calculator");
-        driver.manage().window().maximize();
-        Thread.sleep(3000);
+    public void createCalculation() throws InterruptedException {
+        calculatorPage = new CalculatorPage(driver);
+        calculatorPage.calculate(
+                numberOfInstances,
+                machineType,
+                gpuModel,
+                localSSD,
+                region,
+                commitedUse);
 
-        driver.findElement(By.xpath("//span[text()='Add to estimate']")).click();
-        Thread.sleep(3000);
+        // switching tabs
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
 
-        driver.findElement(By.xpath("//p[contains(text(),'A secure and customizable compute service that let')]")).click();
-        Thread.sleep(3000);
+        summaryPage = new SummaryPage(driver);
 
-        WebElement ss = driver.findElement(By.xpath("//div[@class='QiFlid']//div[@jsaction='JIbuQc:qGgAE']//div[@class='wX4xVc-Bz112c-RLmnJb']"));
-        for (int i = 0; i < 3; i++) {
-            ss.click();
-        }
-        Thread.sleep(3000);
+        // checking number of instances
+        String expectedNumberOfInstances = numberOfInstances;
+        String actualNumberOfInstances = summaryPage.getNumberOfInstances() ;
+        Assert.assertEquals( expectedNumberOfInstances , actualNumberOfInstances );
 
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[4]")).click();
-        Robot rb = new Robot();
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
+        // checking operating system
+        String expectedOperatingSystem = operatingSystem;
+        String actualOperatingSystem = summaryPage.getOperatingSystem();
+        Assert.assertEquals( expectedOperatingSystem , actualOperatingSystem);
 
-        driver.findElement(By.xpath("//label[normalize-space()='Regular']")).click();
-        Thread.sleep(3000);
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[5]")).click();
-        Thread.sleep(3000);
-        rb.keyPress(KeyEvent.VK_ENTER);      //machine family
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
+        // checking provisioning model
+        String expectedProvisioningModel = provisioningModel;
+        String actualProvisioningModel = summaryPage.getProvisioningModel();
+        Assert.assertEquals(expectedProvisioningModel, actualProvisioningModel);
 
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[6]")).click();
-        Thread.sleep(3000);
+        // checking machine type
+        String expectedMachineType = "n1-standard-8, vCPUs: 8, RAM: 30 GB";
+        String actualMachineType = summaryPage.getMachineType() ;
+        Assert.assertEquals(expectedMachineType, actualMachineType);
 
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);   //series
-        Thread.sleep(3000);
+        // checking Select GPU Toggle
+        String expectedGpuToggle = "true";
+        String actualGpuToggle = summaryPage.getGpuToggle();
+        Assert.assertEquals(expectedGpuToggle, actualGpuToggle);
 
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[7]")).click();
-        Thread.sleep(3000);
+        // checking GPU model
+        String expectedGpuModel = "NVIDIA V100";
+        String actualGpuModel = summaryPage.getGpuModel() ;
+        Assert.assertEquals(expectedGpuModel, actualGpuModel);
 
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);     //machine type
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
+        // checking Number of Gpus
+        String expectedNumberOfGpus = numberOfGPUs;
+        String actualNumberOfGpus = summaryPage.getNumberOfGpus() ;
+        Assert.assertEquals(expectedNumberOfGpus, actualNumberOfGpus);
 
-        driver.findElement(By.xpath("(//span[@class='eBlXUe-hywKDc'])[6]")).click();
-        Thread.sleep(3000);
+        // checking Local SSD
+        String expectedLocalSsd = localSSD;
+        String actualLocalSsd = summaryPage.getLocalSsd() ;
+        Assert.assertEquals(expectedLocalSsd, actualLocalSsd);
 
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[8]")).click();
-        Thread.sleep(3000);
+        // checking Region
+        String expectedRegion = region;
+        String actualRegion = summaryPage.getRegion() ;
+        Assert.assertEquals(expectedRegion, actualRegion);
 
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);     //gpu type
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[9]")).click();
-        Thread.sleep(3000);
-
-        rb.keyPress(KeyEvent.VK_ENTER);     //gpus
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[10]")).click();
-        Thread.sleep(3000);
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);//ssd
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);
-
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("(//div[@class='VfPpkd-aPP78e'])[11]")).click();
-        Thread.sleep(3000);
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);
-
-        rb.keyPress(KeyEvent.VK_DOWN);
-        rb.keyRelease(KeyEvent.VK_DOWN);          //netherlands
-
-        rb.keyPress(KeyEvent.VK_ENTER);
-        rb.keyRelease(KeyEvent.VK_ENTER);
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("//label[normalize-space()='1 year']")).click();
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("//span[@class='FOBRw-vQzf8d']")).click();
-        Thread.sleep(3000);
-
-        driver.findElement(By.xpath("//a[normalize-space()='Open estimate summary']")).click();
-        Thread.sleep(3000);
-
-        driver.quit();
+        // checking Commited use discount options
+        String expectedCommitedUse = commitedUse;
+        String actualCommitedUse = summaryPage.getCommitedUse() ;
+        Assert.assertEquals(expectedCommitedUse, actualCommitedUse);
 
     }
+
+
+
+    @AfterClass
+    public void close() {
+        driver.quit();
+    }
 }
+
