@@ -12,7 +12,7 @@ public class SummaryPage {
         PageFactory.initElements(driver,this);
     }
 
-    @FindBy( xpath = "//span[(text(), 'Number of Instances')]/following-sibling::span")
+    @FindBy( xpath = "//span[contains(text(), 'Number of Instances')]/following-sibling::span")
      WebElement numberOfInstances;
 
     @FindBy( xpath = "//span[contains(text(), 'Operating System / Software')]/following-sibling::span")
